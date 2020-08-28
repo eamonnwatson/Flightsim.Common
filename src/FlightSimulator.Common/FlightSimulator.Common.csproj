@@ -8,6 +8,7 @@
     <Description>Common Flightsimulator Library</Description>
     <Copyright>Eamonn Watson</Copyright>
     <RepositoryUrl>https://github.com/eamonnwatson/Flightsim.Common</RepositoryUrl>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
 </Project>
