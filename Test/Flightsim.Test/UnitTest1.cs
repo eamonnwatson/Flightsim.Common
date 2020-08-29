@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using EW.FlightSimulator.Common.Units;
 
 namespace Flightsim.Test
 {
@@ -8,6 +9,10 @@ namespace Flightsim.Test
         [TestMethod]
         public void TestMethod1()
         {
+            var feet = 5280;
+
+            var length = Length.FromFeet(feet);
+
         }
     }
 }

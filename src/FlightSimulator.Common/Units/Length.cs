@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EW.FlightSimulator.Common.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -22,13 +23,13 @@ namespace EW.FlightSimulator.Common.Units
 
     public struct Length : IEquatable<Length>, IComparable, IComparable<Length>, IConvertible, IFormattable
     {
-        #region constructors
+        #region Constructors
         public Length(double value, LengthUnit unit)
         {
             if (unit == LengthUnit.Undefined)
                 throw new ArgumentException("Invalid Unit has been specified", nameof(unit));
 
-            Value = value;
+            Value = Guard.EnsureValidNumber(value, nameof(value));
             Unit = unit;
         }
         #endregion
@@ -37,7 +38,10 @@ namespace EW.FlightSimulator.Common.Units
         public static LengthUnit BaseUnit { get; } = LengthUnit.Metre;
         public static Length MaxValue { get; } = new Length(double.MaxValue, BaseUnit);
         public static Length MinValue { get; } = new Length(double.MinValue, BaseUnit);
-        public static LengthUnit[] Units { get; } = Enum.GetValues(typeof(LengthUnit)).Cast<LengthUnit>().Except(new LengthUnit[] { LengthUnit.Undefined }).ToArray();
+        public static LengthUnit[] Units { get; } = Enum.GetValues(typeof(LengthUnit))
+                                                        .Cast<LengthUnit>()
+                                                        .Except(new LengthUnit[] { LengthUnit.Undefined })
+                                                        .ToArray();
         public static Length Zero { get; } = new Length(0, BaseUnit);
         #endregion
 
@@ -121,14 +125,15 @@ namespace EW.FlightSimulator.Common.Units
 
             switch (unit)
             {
-                case LengthUnit.Foot: return baseUnitValue / 0.3048;
-                case LengthUnit.Inch: return baseUnitValue / 2.54e-2;
-                case LengthUnit.Kilometre: return (baseUnitValue) / 1e3d;
-                case LengthUnit.Metre: return baseUnitValue;
-                case LengthUnit.Mile: return baseUnitValue / 1609.34;
-                case LengthUnit.Millimetre: return (baseUnitValue) / 1e-3d;
-                case LengthUnit.NauticalMile: return baseUnitValue / 1852;
-                case LengthUnit.Yard: return baseUnitValue / 0.9144;
+                case LengthUnit.Centimetre:     return baseUnitValue / 0.01;
+                case LengthUnit.Foot:           return baseUnitValue / 0.3048;
+                case LengthUnit.Inch:           return baseUnitValue / 0.0254;
+                case LengthUnit.Kilometre:      return baseUnitValue / 1000;
+                case LengthUnit.Metre:          return baseUnitValue;
+                case LengthUnit.Mile:           return baseUnitValue / 1609.34;
+                case LengthUnit.Millimetre:     return baseUnitValue / 0.001;
+                case LengthUnit.NauticalMile:   return baseUnitValue / 1852;
+                case LengthUnit.Yard:           return baseUnitValue / 0.9144;
                 default:
                     throw new NotImplementedException($"Could not convert {Unit} to {unit}.");
             }
@@ -137,16 +142,17 @@ namespace EW.FlightSimulator.Common.Units
         {
             switch (Unit)
             {
-                case LengthUnit.Foot: return Value * 0.3048;
-                case LengthUnit.Inch: return Value * 2.54e-2;
-                case LengthUnit.Kilometre: return (Value) * 1e3d;
-                case LengthUnit.Metre: return Value;
-                case LengthUnit.Mile: return Value * 1609.34;
-                case LengthUnit.Millimetre: return (Value) * 1e-3d;
-                case LengthUnit.NauticalMile: return Value * 1852;
-                case LengthUnit.Yard: return Value * 0.9144;
+                case LengthUnit.Centimetre:     return Value * 0.01;
+                case LengthUnit.Foot:           return Value * 0.3048;
+                case LengthUnit.Inch:           return Value * 0.0254;
+                case LengthUnit.Kilometre:      return Value * 1000;
+                case LengthUnit.Metre:          return Value;
+                case LengthUnit.Mile:           return Value * 1609.34;
+                case LengthUnit.Millimetre:     return Value * 0.001;
+                case LengthUnit.NauticalMile:   return Value * 1852;
+                case LengthUnit.Yard:           return Value * 0.9144;
                 default:
-                    throw new NotImplementedException($"Could not convert {Unit} to base unit.");
+                    throw new NotImplementedException($"Could not convert {Unit} to metres.");
             }
         }
         #endregion
@@ -332,7 +338,6 @@ namespace EW.FlightSimulator.Common.Units
         {
             throw new NotImplementedException();
         }
-
         #endregion
 
         public override int GetHashCode()
@@ -344,9 +349,10 @@ namespace EW.FlightSimulator.Common.Units
         {
             return ToString("g");
         }
+
         public string ToString(string format)
         {
-            return ToString(format, CultureInfo.CurrentUICulture);
+            return ToString(format, new CultureInfo("en-US"));
         }
     }
 }

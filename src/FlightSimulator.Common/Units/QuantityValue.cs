@@ -1,4 +1,6 @@
-﻿namespace EW.FlightSimulator.Common.Units
+﻿using EW.FlightSimulator.Common.Extensions;
+
+namespace EW.FlightSimulator.Common.Units
 {
     public struct QuantityValue
     {
@@ -7,7 +9,7 @@
 
         private QuantityValue(double val)
         {
-            value = val; //Guard.EnsureValidNumber(val, nameof(val));
+            value = Guard.EnsureValidNumber(val, nameof(val));
             valueDecimal = null;
         }
         private QuantityValue(decimal val)
