@@ -10,25 +10,17 @@ namespace EW.FlightSimulator.Common.Units
         FootPerHour,
         FootPerMinute,
         FootPerSecond,
-        KilometerPerHour,
-        KilometerPerMinute,
-        KilometerPerSecond,
+        KilometrePerHour,
+        KilometrePerMinute,
+        KilometrePerSecond,
         Knot,
-        MeterPerHour,
-        MeterPerMinute,
-        MeterPerSecond,
+        MetrePerHour,
+        MetrePerMinute,
+        MetrePerSecond,
         MilePerHour,
     }
 
-    //public struct Speed : IEquatable<Speed>, IComparable, IComparable<Speed>, IConvertible, IFormattable
-    //{
 
 
 
-
-
-
-
-
-    //}
 }

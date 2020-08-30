@@ -21,7 +21,7 @@ namespace EW.FlightSimulator.Common.Units
         NauticalMile,
     }
 
-    public struct Length : IEquatable<Length>, IComparable, IComparable<Length>, IConvertible, IFormattable
+    public struct Length : IQuantity<LengthUnit>, IEquatable<Length>, IComparable, IComparable<Length>, IConvertible, IFormattable
     {
         #region Constructors
         public Length(double value, LengthUnit unit)
@@ -85,6 +85,13 @@ namespace EW.FlightSimulator.Common.Units
         public static Length From(QuantityValue value, LengthUnit fromUnit)
         {
             return new Length((double)value, fromUnit);
+        }
+        #endregion
+
+        #region Static Method
+        public static string GetAbbreviation(LengthUnit unit)
+        {
+            return AbbreviationCache.Default.GetDefaultAbbreviation(unit);
         }
         #endregion
 
@@ -336,7 +343,7 @@ namespace EW.FlightSimulator.Common.Units
         #region IFormattable
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            throw new NotImplementedException();
+            return QuantityFormatter.Format<LengthUnit>(this, format);
         }
         #endregion
 
