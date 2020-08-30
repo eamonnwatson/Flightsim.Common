@@ -4,9 +4,9 @@ using System.Text;
 
 namespace EW.FlightSimulator.Common.Extensions
 {
-    internal static class Guard
+    internal static class GuardClauses
     {
-        internal static double EnsureValidNumber(double value, string paramName)
+        internal static double IsValidNumber(double value, string paramName)
         {
             if (double.IsNaN(value)) throw new ArgumentException("NaN is not a valid number.", paramName);
             if (double.IsInfinity(value)) throw new ArgumentException("PositiveInfinity or NegativeInfinity is not a valid number.", paramName);

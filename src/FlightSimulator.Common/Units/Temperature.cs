@@ -4,8 +4,7 @@ using System.Text;
 
 namespace EW.FlightSimulator.Common.Units
 {
-    internal interface IQuantity<TUnitType>
+    public struct Temperature
     {
-
     }
 }

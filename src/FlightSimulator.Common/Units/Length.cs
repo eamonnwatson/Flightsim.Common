@@ -9,27 +9,15 @@ namespace EW.FlightSimulator.Common.Units
 {
     public enum LengthUnit
     {
-        Undefined,
-        Metre,
-        Kilometre,
-        Centimetre,
-        Millimetre,
-        Inch,
-        Foot,
-        Yard,
-        Mile,
-        NauticalMile,
+        Millimetre, Centimetre, Metre, Kilometre, Inch, Foot, Yard, Mile, NauticalMile,
     }
 
-    public struct Length : IQuantity<LengthUnit>, IEquatable<Length>, IComparable, IComparable<Length>, IConvertible, IFormattable
+    public struct Length : IUnit<LengthUnit>, IEquatable<Length>, IComparable, IComparable<Length>, IConvertible, IFormattable
     {
         #region Constructors
         public Length(double value, LengthUnit unit)
         {
-            if (unit == LengthUnit.Undefined)
-                throw new ArgumentException("Invalid Unit has been specified", nameof(unit));
-
-            Value = Guard.EnsureValidNumber(value, nameof(value));
+            Value = GuardClauses.IsValidNumber(value, nameof(value));
             Unit = unit;
         }
         #endregion
@@ -40,49 +28,48 @@ namespace EW.FlightSimulator.Common.Units
         public static Length MinValue { get; } = new Length(double.MinValue, BaseUnit);
         public static LengthUnit[] Units { get; } = Enum.GetValues(typeof(LengthUnit))
                                                         .Cast<LengthUnit>()
-                                                        .Except(new LengthUnit[] { LengthUnit.Undefined })
                                                         .ToArray();
         public static Length Zero { get; } = new Length(0, BaseUnit);
         #endregion
 
         #region Static Factory
-        public static Length FromCentimetres(QuantityValue centimetres)
+        public static Length FromCentimetres(UnitValue centimetres)
         {
             return From(centimetres, LengthUnit.Centimetre);
         }
-        public static Length FromFeet(QuantityValue feet)
+        public static Length FromFeet(UnitValue feet)
         {
             return From(feet, LengthUnit.Foot);
         }
-        public static Length FromInches(QuantityValue inches)
+        public static Length FromInches(UnitValue inches)
         {
             return From(inches, LengthUnit.Inch);
         }
-        public static Length FromKilometers(QuantityValue kilometres)
+        public static Length FromKilometers(UnitValue kilometres)
         {
             return From(kilometres, LengthUnit.Kilometre);
         }
-        public static Length FromMeters(QuantityValue metres)
+        public static Length FromMeters(UnitValue metres)
         {
             return From(metres, LengthUnit.Metre);
         }
-        public static Length FromMiles(QuantityValue miles)
+        public static Length FromMiles(UnitValue miles)
         {
             return From(miles, LengthUnit.Mile);
         }
-        public static Length FromMillimetres(QuantityValue millimetres)
+        public static Length FromMillimetres(UnitValue millimetres)
         {
             return From(millimetres, LengthUnit.Millimetre);
         }
-        public static Length FromNauticalMiles(QuantityValue nauticalmiles)
+        public static Length FromNauticalMiles(UnitValue nauticalmiles)
         {
             return From(nauticalmiles, LengthUnit.NauticalMile);
         }
-        public static Length FromYards(QuantityValue yards)
+        public static Length FromYards(UnitValue yards)
         {
             return From(yards, LengthUnit.Yard);
         }
-        public static Length From(QuantityValue value, LengthUnit fromUnit)
+        public static Length From(UnitValue value, LengthUnit fromUnit)
         {
             return new Length((double)value, fromUnit);
         }
@@ -91,76 +78,74 @@ namespace EW.FlightSimulator.Common.Units
         #region Static Method
         public static string GetAbbreviation(LengthUnit unit)
         {
-            return AbbreviationCache.Default.GetDefaultAbbreviation(unit);
+            throw new NotImplementedException();
         }
         #endregion
 
         #region Properties
         public double Value { get; }
         public LengthUnit Unit { get; }
-        public double Centimetres => As(LengthUnit.Centimetre);
-        public double Feet => As(LengthUnit.Foot);
-        public double Inches => As(LengthUnit.Inch);
-        public double Kilometres => As(LengthUnit.Kilometre);
-        public double Miles => As(LengthUnit.Mile);
-        public double Millimetres => As(LengthUnit.Millimetre);
-        public double Metres => As(LengthUnit.Metre);
-        public double NauticalMiles => As(LengthUnit.NauticalMile);
-        public double Yards => As(LengthUnit.Yard);
+        public double Centimetres => To(LengthUnit.Centimetre);
+        public double Feet => To(LengthUnit.Foot);
+        public double Inches => To(LengthUnit.Inch);
+        public double Kilometres => To(LengthUnit.Kilometre);
+        public double Miles => To(LengthUnit.Mile);
+        public double Millimetres => To(LengthUnit.Millimetre);
+        public double Metres => To(LengthUnit.Metre);
+        public double NauticalMiles => To(LengthUnit.NauticalMile);
+        public double Yards => To(LengthUnit.Yard);
         #endregion
 
         #region Conversion
-        public double As(LengthUnit unit)
+        public double To(LengthUnit unit)
         {
             if (Unit == unit)
                 return Convert.ToDouble(Value);
 
-            var converted = GetValueAs(unit);
+            var converted = ConvertTo(unit);
             return Convert.ToDouble(converted);
         }
         public Length ToUnit(LengthUnit unit)
         {
-            var convertedValue = GetValueAs(unit);
+            var convertedValue = ConvertTo(unit);
             return new Length(convertedValue, unit);
         }
-        private double GetValueAs(LengthUnit unit)
+        private double ConvertTo(LengthUnit unit)
         {
             if (Unit == unit)
                 return Value;
 
-            var baseUnitValue = GetValueInBaseUnit();
+            var baseUnitValue = ConvertToBaseUnit();
 
-            switch (unit)
+            return unit switch
             {
-                case LengthUnit.Centimetre:     return baseUnitValue / 0.01;
-                case LengthUnit.Foot:           return baseUnitValue / 0.3048;
-                case LengthUnit.Inch:           return baseUnitValue / 0.0254;
-                case LengthUnit.Kilometre:      return baseUnitValue / 1000;
-                case LengthUnit.Metre:          return baseUnitValue;
-                case LengthUnit.Mile:           return baseUnitValue / 1609.34;
-                case LengthUnit.Millimetre:     return baseUnitValue / 0.001;
-                case LengthUnit.NauticalMile:   return baseUnitValue / 1852;
-                case LengthUnit.Yard:           return baseUnitValue / 0.9144;
-                default:
-                    throw new NotImplementedException($"Could not convert {Unit} to {unit}.");
-            }
+                LengthUnit.Millimetre   => baseUnitValue / 0.001,
+                LengthUnit.Centimetre   => baseUnitValue / 0.01,
+                LengthUnit.Inch         => baseUnitValue / 0.0254,
+                LengthUnit.Foot         => baseUnitValue / 0.3048,
+                LengthUnit.Yard         => baseUnitValue / 0.9144,
+                LengthUnit.Metre        => baseUnitValue,
+                LengthUnit.Kilometre    => baseUnitValue / 1000,
+                LengthUnit.Mile         => baseUnitValue / 1609.34,
+                LengthUnit.NauticalMile => baseUnitValue / 1852,
+                _ => throw new NotImplementedException($"Could not convert {Unit} to {unit}."),
+            };
         }
-        private double GetValueInBaseUnit()
+        private double ConvertToBaseUnit()
         {
-            switch (Unit)
+            return Unit switch
             {
-                case LengthUnit.Centimetre:     return Value * 0.01;
-                case LengthUnit.Foot:           return Value * 0.3048;
-                case LengthUnit.Inch:           return Value * 0.0254;
-                case LengthUnit.Kilometre:      return Value * 1000;
-                case LengthUnit.Metre:          return Value;
-                case LengthUnit.Mile:           return Value * 1609.34;
-                case LengthUnit.Millimetre:     return Value * 0.001;
-                case LengthUnit.NauticalMile:   return Value * 1852;
-                case LengthUnit.Yard:           return Value * 0.9144;
-                default:
-                    throw new NotImplementedException($"Could not convert {Unit} to metres.");
-            }
+                LengthUnit.Millimetre   => Value * 0.001,
+                LengthUnit.Centimetre   => Value * 0.01,
+                LengthUnit.Inch         => Value * 0.0254,
+                LengthUnit.Foot         => Value * 0.3048,
+                LengthUnit.Yard         => Value * 0.9144,
+                LengthUnit.Metre        => Value,
+                LengthUnit.Kilometre    => Value * 1000,
+                LengthUnit.Mile         => Value * 1609.34,
+                LengthUnit.NauticalMile => Value * 1852,
+                _ => throw new NotImplementedException($"Could not convert {Unit} to metres."),
+            };
         }
         #endregion
 
@@ -171,11 +156,11 @@ namespace EW.FlightSimulator.Common.Units
         }
         public static Length operator +(Length left, Length right)
         {
-            return new Length(left.Value + right.GetValueAs(left.Unit), left.Unit);
+            return new Length(left.Value + right.ConvertTo(left.Unit), left.Unit);
         }
         public static Length operator -(Length left, Length right)
         {
-            return new Length(left.Value - right.GetValueAs(left.Unit), left.Unit);
+            return new Length(left.Value - right.ConvertTo(left.Unit), left.Unit);
         }
         public static Length operator *(double left, Length right)
         {
@@ -195,19 +180,19 @@ namespace EW.FlightSimulator.Common.Units
         }
         public static bool operator <=(Length left, Length right)
         {
-            return left.Value <= right.GetValueAs(left.Unit);
+            return left.Value <= right.ConvertTo(left.Unit);
         }
         public static bool operator >=(Length left, Length right)
         {
-            return left.Value >= right.GetValueAs(left.Unit);
+            return left.Value >= right.ConvertTo(left.Unit);
         }
         public static bool operator <(Length left, Length right)
         {
-            return left.Value < right.GetValueAs(left.Unit);
+            return left.Value < right.ConvertTo(left.Unit);
         }
         public static bool operator >(Length left, Length right)
         {
-            return left.Value > right.GetValueAs(left.Unit);
+            return left.Value > right.ConvertTo(left.Unit);
         }
         public static bool operator ==(Length left, Length right)
         {
@@ -229,7 +214,7 @@ namespace EW.FlightSimulator.Common.Units
         }
         public bool Equals(Length other)
         {
-            return Value.Equals(other.GetValueAs(Unit));
+            return Value.Equals(other.ConvertTo(Unit));
         }
         #endregion
 
@@ -244,7 +229,7 @@ namespace EW.FlightSimulator.Common.Units
 
         public int CompareTo(Length other)
         {
-            return Value.CompareTo(other.GetValueAs(Unit));
+            return Value.CompareTo(other.ConvertTo(Unit));
         }
         #endregion
 
@@ -343,7 +328,7 @@ namespace EW.FlightSimulator.Common.Units
         #region IFormattable
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            return QuantityFormatter.Format<LengthUnit>(this, format);
+            throw new NotImplementedException();
         }
         #endregion
 
@@ -354,7 +339,7 @@ namespace EW.FlightSimulator.Common.Units
 
         public override string ToString()
         {
-            return ToString("g");
+            return ToString("G");
         }
 
         public string ToString(string format)
