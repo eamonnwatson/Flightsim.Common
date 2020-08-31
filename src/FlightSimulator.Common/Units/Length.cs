@@ -328,7 +328,7 @@ namespace EW.FlightSimulator.Common.Units
         #region IFormattable
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            throw new NotImplementedException();
+            return UnitFormatter.Format<LengthUnit>(this, format);
         }
         #endregion
 
