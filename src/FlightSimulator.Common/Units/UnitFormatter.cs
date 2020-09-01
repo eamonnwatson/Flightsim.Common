@@ -9,7 +9,7 @@ namespace EW.FlightSimulator.Common.Units
             if (string.IsNullOrWhiteSpace(format))
                 format = "g";
 
-            throw new NotImplementedException();
+            return "";
         }
     }
 }
